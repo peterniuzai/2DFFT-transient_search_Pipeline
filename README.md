@@ -1,8 +1,8 @@
-# *** 2DFFT-search*
+#  2DFFT-search
 --This is a pipeline use 2DFFT method to search Fast Radio burst  
 
 ## 1. How to use
-Add* */2DFFT_transient_search/src*   to your PYTHONPATH and LD_LIBRARY_PATH varible in your .bashrc file.  
+Add*  */2DFFT_transient_search/src*   to your PYTHONPATH and LD_LIBRARY_PATH varible in your .bashrc file.  
 
 	export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:path_to_download/2DFFT_transient_search/src"
 	
@@ -38,4 +38,4 @@ Use
 	                        polar_sets_3D, polar_sets_2D, 2ndFFT_3D, 2ndFFT_2D}  
 	                        (This function Remain updates)  
  
-==Input file is required for filterbank file (*.fil) . SIGPYPROC is required at this stage==
+`Input file is required for filterbank file (*.fil) . SIGPYPROC is required at this stage`
