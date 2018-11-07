@@ -1,0 +1,2 @@
+fake -period 2 -width 0.004 -snrpeak 10 -dm 100 -nchans 1024 -tsamp 1000 -fch1 1400 -foff 0.09765625 -tobs 2 > fake_test.fil
+

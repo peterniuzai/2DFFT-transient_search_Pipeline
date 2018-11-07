@@ -1,0 +1,1 @@
+dedisperse_all -d 1 2000 --zerodm -G -dec 512 -file G_result.txt
