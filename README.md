@@ -1,9 +1,11 @@
-#  2DFFT-search
+# 2DFFT-search
 --This is a pipeline use 2DFFT method to search Fast Radio burst  
-## 1. Here we proposed a different FRB searching algorithm which basically trace a curve in frequency-time image. This algorithm is mainly realized by 2 dimensional Fast Fourier Transform(2DFFT). We take a 2DFFT on $I(\nu^{-2},t)$ data map, Then trace the signal along the angle of straight line. In this searching method, it's easier to remove RFI in large scale and will bring a speed up benefit in well-developed 2D FFT library both in CPU and GPU code.
 
-## 2. How to use
-Add*  */2DFFT_transient_search/src*   to your PYTHONPATH and LD_LIBRARY_PATH varible in your .bashrc file.  
+## 1. Introduction to 2DFFT pipeline:
+ Here we proposed a different FRB searching algorithm which basically trace a curve in frequency-time image. This algorithm is mainly realized by 2 dimensional Fast Fourier Transform(2DFFT). We take a 2DFFT on I(f^-2^,t)  data map, Then trace the signal along the angle of straight line. In this searching method, it's easier to remove RFI in large scale and will bring a speed up benefit in well-developed 2D FFT library both in CPU and GPU code.
+
+## 1. How to use
+Add* */2DFFT_transient_search/src*   to your PYTHONPATH and LD_LIBRARY_PATH varible in your .bashrc file.  
 
 	export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:path_to_download/2DFFT_transient_search/src"
 	
@@ -39,4 +41,10 @@ Use
 	                        polar_sets_3D, polar_sets_2D, 2ndFFT_3D, 2ndFFT_2D}  
 	                        (This function Remain updates)  
  
-`Input file is required for filterbank file (*.fil) . SIGPYPROC is required at this stage`
+==Input file is required for filterbank file (*.fil) . SIGPYPROC is required at this stage==
+
+## 3. Result overview:
+If we use '-p' in parameter options, we will get a final plot like this:
+![ ](/home/nch/FRB_found_3/FRB090625_Result.png  "FRB090625 with 2DFFT")
+
+Plot for FRB090625 search result. Data has 4620288 time samples and 1024 frequency channels.  Top left give the candidate plot at 2nd 1DFFT map. Right top plot the candidates pixels number at each DM value and significance. Bottom plot is like traditional plot for DM and time, but time here are instead by time samples interval.
