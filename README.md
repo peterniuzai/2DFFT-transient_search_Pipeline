@@ -1,7 +1,7 @@
-#*** *2DFFT-search**
-This is a pipeline use 2DFFT method to search Fast Radio burst  
----
-##1. How to use
+##*** *2DFFT-search**
+--This is a pipeline use 2DFFT method to search Fast Radio burst  
+
+###1. How to use
 Add* */2DFFT_transient_search/src*   to your PYTHONPATH and LD_LIBRARY_PATH varible in your .bashrc file.  
 
 	export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:path_to_download/2DFFT_transient_search/src"
