@@ -1,7 +1,8 @@
 #  2DFFT-search
 --This is a pipeline use 2DFFT method to search Fast Radio burst  
+## 1. Here we proposed a different FRB searching algorithm which basically trace a curve in frequency-time image. This algorithm is mainly realized by 2 dimensional Fast Fourier Transform(2DFFT). We take a 2DFFT on $I(\nu^{-2},t)$ data map, Then trace the signal along the angle of straight line. In this searching method, it's easier to remove RFI in large scale and will bring a speed up benefit in well-developed 2D FFT library both in CPU and GPU code.
 
-## 1. How to use
+## 2. How to use
 Add*  */2DFFT_transient_search/src*   to your PYTHONPATH and LD_LIBRARY_PATH varible in your .bashrc file.  
 
 	export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:path_to_download/2DFFT_transient_search/src"
