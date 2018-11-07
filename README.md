@@ -1,4 +1,4 @@
-# 2DFFT-search
+# 2DFFT-search Pipeline
 --This is a pipeline use 2DFFT method to search Fast Radio burst  
 
 ## 1. Introduction to 2DFFT pipeline:
