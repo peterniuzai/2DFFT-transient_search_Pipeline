@@ -1,6 +1,6 @@
 # 2DFFT-search Pipeline
 --This is a pipeline use 2DFFT method to search Fast Radio burst  
-Pipeline is written by Chenhui(pete) Niu, please cite this paper if you want to use this pipeline.
+
 
 ## 1. Introduction to 2DFFT pipeline:
  Here we proposed a different FRB searching algorithm which basically trace a curve in frequency-time image. This algorithm is mainly realized by 2 dimensional Fast Fourier Transform(2DFFT). We take a 2DFFT on I(f^-2^,t)  data map, Then trace the signal along the angle of straight line. In this searching method, it's easier to remove RFI in large scale and will bring a speed up benefit in well-developed 2D FFT library both in CPU and GPU code.
