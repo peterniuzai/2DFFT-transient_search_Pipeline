@@ -13,7 +13,7 @@ def DM_calculate(fy,loc,nbin,T):
 	DM value of candidate
     """
     C     = 4.148908e6 # (ms)
-    k2    = np.tan(location/180.*np.pi)
+    k2    = np.tan(loc/180.*np.pi)
     f_rsl = (fy[-1] - fy[0])
     unit  = f_rsl / T
     DM    = k2 / C / unit

@@ -30,7 +30,6 @@ if __name__ == '__main__':
      
      # the size of the whole community, i.e.,the total number of working nodes in the MPI cluster
      comm_size = comm.Get_size()
-
      if comm_rank !=0 and ('-h' in sys.argv or '--help' in sys.argv):
              exit(0)
      p = OptionParser()
@@ -38,7 +37,7 @@ if __name__ == '__main__':
      p.set_description(__doc__)
      p.add_option('-f', '--file', dest='file', type='str',default='',
         help='Put filterbank file want to search')
-     p.add_option('-t','--threshold', dest='threshold', type = 'float',default = 8.5,
+     p.add_option('-t','--threshold', dest='threshold', type = 'float',default = 16,
         help='Threshold(sigma) for candidates pick')
      p.add_option('--dm', dest='dm', type = 'int',default = [50,2000],nargs=2,
         help='Set  DM range, Suggest use default [50,2000]')
@@ -72,6 +71,10 @@ if __name__ == '__main__':
                 p.print_help()
         exit()
      comm.barrier()
+     if opts.plot:
+	plot_flag = 1
+     else:
+	plot_flag = 0
      if opts.verbose:
          SHOW = 1
      else:
@@ -82,10 +85,11 @@ if __name__ == '__main__':
 ############
 #Arguments #
 ############
-     f_name    = opts.file
-     plot_dir  = '../graph/' + f_name[-10:-4] + '/'
+     f_name  = opts.file.split('/')[-1]
+     file_in   = opts.file
+     plot_dir  = '../graph/' + f_name[:-4] + '/'
      if comm_rank == 0:
-                dir_create(plot_dir)
+                dir_create(plot_dir,f_name)
                 print 'directory build complete!'
      comm.barrier()
 
@@ -107,8 +111,8 @@ if __name__ == '__main__':
 ######################
 
 
-     if comm_rank == 0:	 print 'Begin to load data from ' + f_name 
-     fil, num, p_n, freq, t_rsl, t_len, t_gulp, nbin ,nch, T,fy,angle,n_deg,L_fft = read_data(f_name ,t_len, nbin,comm_rank, comm_size,DM_range,Wp,ang)
+     if comm_rank == 0:	 print 'Begin to load data from ' + file_in 
+     fil, num, p_n, freq, t_rsl, t_len, t_gulp, nbin ,nch, T,fy,angle,n_deg,L_fft = read_data(file_in ,t_len, nbin,comm_rank, comm_size,DM_range,Wp,ang)
 
 ########################################
 #Create New comm if time length too short     
@@ -126,9 +130,10 @@ if __name__ == '__main__':
      for  i_ch in range(p_n):  #i_chunk 
 	     t_p    = comm_rank*p_n   #the thread position in total time in unit(chunk)
 	     data   = fil.readBlock(t_len*(i_ch+t_p),int(t_len))
+	     seq    = comm_rank*p_n + i_ch
 	     std_r  = data.std()	
 	     data   = np.nan_to_num(data)
-	     data   = data - data.mean()
+	     data   = np.array(data - data.mean())
 	     t_ch_s = t_len*(i_ch+t_p)*t_rsl   #time of chunck start.
 	     t_ch_e = t_len*(i_ch+t_p+1)*t_rsl 
 	     t_axis = np.linspace(t_ch_s,t_ch_e,t_len) 
@@ -140,12 +145,13 @@ if __name__ == '__main__':
 	     if comm_rank == 0 and SHOW ==1:    print 'Rebin over. \nBegin to do 1st 2-D FFT on rebin data...'
 	
 	     FFT1st_data = FFT(re_data, 2, L_fft, msk_cycle, t_gulp)
-	
+	 	
 	     if comm_rank == 0 and SHOW ==1 :    print '1st FFT over.\nBegin to transform rectangular coordinates into polar coordinates...'
 	
 	     polar_data  = polar_coordinates_convert_inter( FFT1st_data, angle, n_deg, L_fft)
 	     DM_axis = np.linspace(DM_range[0],DM_range[1],polar_data.shape[1])
 	     
+
 
 	     if comm_rank == 0 and SHOW ==1:    print 'Polar transform over,Polar data shape:',polar_data.shape,'\nBegin to do the 2nd 1-D FFT along radius direction...'
 	     FFT2nd_data = FFT(polar_data, 1 )# 1 means 1 Dimension FFT
@@ -161,7 +167,14 @@ if __name__ == '__main__':
                     print '###############\n'			
 
 		    print 'Begin to locate the signal and calculate Significance...'
-	     candidate, G_t  = Signal_finding(DM_axis,threshold,FFT2nd_data, pixel, DM_axis, comm_rank,p_n ,i_ch,std_r)
+	     candidate, G_t,dump_flag  = Signal_finding(DM_axis,threshold,FFT2nd_data, pixel, DM_range, seq)
+	     if dump_flag == 1:
+			print 'Dumping data into disk...(%d)'%seq
+	#		np.save('../data/'+f_name[:-4]+'/raw_'+str(seq),data)
+	#		np.save('../data/'+f_name[:-4]+'/rebin_'+str(seq),re_data)
+	#		np.save('../data/'+f_name[:-4]+'/polar_'+str(seq),polar_data)
+	#		np.save('../data/'+f_name[:-4]+'/FFT1st_'+str(seq),FFT1st_data)
+			np.save('../data/'+f_name[:-4]+'/FFT2nd_'+str(seq),FFT2nd_data)
 	     Candidates_l.extend(candidate)
 	     Gtran_l.extend(G_t)
 	
@@ -186,13 +199,13 @@ if __name__ == '__main__':
 		c_Candidates = []
 		c_Gtransient = []
 		for i in range(len(combine_candidates)):
-			if len(combine_candidates[i]) > 1:
+			if len(combine_candidates[i]) > 0:
 				for ii in range(len(combine_candidates[i])):
 					c_Candidates.extend(combine_candidates[i][ii])
 
 		
                 for i in range(len(combine_Gtransient)):
-                        if len(combine_Gtransient[i]) > 1:
+                        if len(combine_Gtransient[i]) > 0:
                                 for ii in range(len(combine_Gtransient[i])):
                                         c_Gtransient.extend([combine_Gtransient[i][ii]])
 
@@ -202,13 +215,15 @@ if __name__ == '__main__':
 		if len(c_Candidates[0,:]) == 0:
 			print 'Found no transient signal above threshold :('
 			exit(0)
-		print '\n\n****************************'
-                print '*multiprocess plot over....*'
-		print '****************************\n\n'
-		if opts.plot:
+
+		if  plot_proc!='':
+			print '\n\n****************************'
+	                print '*multiprocess plot over....*'
+			print '****************************\n\n'
+		if plot_flag==1:
 			print 'Making Result...'
 		else:	
-			exit(1)
+			exit(0)
 		###########################
 		#Begin to make result Plot#
 		###########################
@@ -233,7 +248,8 @@ if __name__ == '__main__':
 			M_seq   = int(c_Gtransient[1,lo[0][0]])
 			dm_G    = c_Gtransient[0,lo[0][0]]
 			lo_dm	= np.where(DM_axis == dm_G)
-			G_data	= np.load('../data/2nd_FFT_'+str(M_seq)+'.npy')
+			G_data	= np.load('../data/'+f_name[:-4]+'/FFT2nd_'+str(M_seq)+'.npy')
+			G_data  = abs(G_data)
 			lo_max	= np.where(G_data[:,lo_dm[0]]==G_data[:,lo_dm[0]].max())
 			y_axis	= np.linspace(-G_data.shape[0]/2,G_data.shape[0]/2,G_data.shape[0])
 			ax1 = fig.add_subplot(2,2,1)
@@ -356,4 +372,4 @@ if __name__ == '__main__':
 		plt.tight_layout()
 		plt.savefig(plot_dir+'overview')
 		plt.show()
-     exit(1)
+     exit(0)

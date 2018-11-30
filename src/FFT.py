@@ -24,6 +24,7 @@ def FFT(data, Dim  ,L_fft = 0, msk_cycle = 0,t_gulp =0,W_f=1):
 #	   print data.shape,"After pad"
 
 	   data   = np.fft.rfft2(data,norm = 'ortho')
+#	   L_fft  = min(data.shape)
 	   data	  = data[int(-L_fft):, 1:int(L_fft)+1]
 	   
            blackman_x    = np.blackman(data.shape[1]*2)

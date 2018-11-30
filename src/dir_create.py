@@ -1,9 +1,12 @@
 import os
 
-def dir_create(plot_dir):
+def dir_create(plot_dir,file_name):
      '''
      Create plot directory
      '''    
+     file_dir = '../data/'+file_name[:-4]
+     if not os.path.exists(file_dir):
+	       os.mkdir(file_dir)
      if not os.path.exists(plot_dir):
                print 'begin to make dir:'+ plot_dir 
                os.mkdir(plot_dir)
