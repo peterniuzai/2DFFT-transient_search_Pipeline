@@ -138,33 +138,42 @@ if __name__ == '__main__':
 	     t_ch_e = t_len*(i_ch+t_p+1)*t_rsl 
 	     t_axis = np.linspace(t_ch_s,t_ch_e,t_len) 
 	     
-	     if comm_rank == 0 and SHOW ==1:    print 'Load Data Over, Datasize for each chunk:',data.shape,'\nBegin to rebin... '
+	     if comm_rank == 0 and SHOW ==1:    			
+			print '\n\n============================================'
+			print 'Load Data Over, Sub-chunck shape:',data.shape
 	     time_de_s = time.time()
 	     re_data, f_axis  =  rebin_inter(data, fy, nbin,t_axis)
-
-	     if comm_rank == 0 and SHOW ==1:    print 'Rebin over. \nBegin to do 1st 2-D FFT on rebin data...'
+	     time_re = time.time() - time_de_s
+	     if comm_rank == 0 and SHOW ==1:    print 'Rebin over.  Take %f (s)'%time_re
 	
+	     time_FFT_s = time.time()
 	     FFT1st_data = FFT(re_data, 2, L_fft, msk_cycle, t_gulp)
+	     time_FFT  = time.time() - time_FFT_s
 	 	
-	     if comm_rank == 0 and SHOW ==1 :    print '1st FFT over.\nBegin to transform rectangular coordinates into polar coordinates...'
+	     if comm_rank == 0 and SHOW ==1 :    print '1st FFT over. Take %f (s)'%time_FFT
 	
+	     time_polar_s = time.time()
 	     polar_data  = polar_coordinates_convert_inter( FFT1st_data, angle, n_deg, L_fft)
+	     time_polar   = time.time() - time_polar_s
 	     DM_axis = np.linspace(DM_range[0],DM_range[1],polar_data.shape[1])
 	     
 
 
-	     if comm_rank == 0 and SHOW ==1:    print 'Polar transform over,Polar data shape:',polar_data.shape,'\nBegin to do the 2nd 1-D FFT along radius direction...'
+	     if comm_rank == 0 and SHOW ==1:    print 'Polar transform over,Takes %f (s)'%time_polar,'\nPolar data shape:',polar_data.shape
+	     time_FFT2nd_s = time.time()
 	     FFT2nd_data = FFT(polar_data, 1 )# 1 means 1 Dimension FFT
+	     time_FFT2nd = time.time()-time_FFT2nd_s
 	     time_de_e = time.time()
 	     t_consume +=  time_de_e - time_de_s
 	     if comm_rank == 0 and SHOW ==1:
-		    print '2nd FFT over.'
-                    print '\n#############'
-                    print 'Process matrix size:',nch,' * '+str(t_len)
-                    print 'Dedispersion Time Cost:', t_consume ,'seconds,  ','equal',t_consume/60.,'minutes.'
-                    print'Process:',i_ch,' of ',p_n,' for total:',p_n*t_len*comm_size,'samples'
-                    print 'Angle range:',angle
-                    print '###############\n'			
+		    print '2nd FFT over.Take %f (s)'%time_FFT2nd
+                    print 'Dedispersion Time Cost:', t_consume ,'seconds'
+		    print 'Equal:',t_consume/60.,'minutes.'
+                    print 'Process:(',int(i_ch),'/',int(p_n),') for Thread 0'
+		    print 'Time stamp from ',seq*t_len,' to ',(seq+1)*t_len
+#		    print ':',p_n*t_len*comm_size,'samples'
+                    print 'Angle search range:[%.2f,%.2f]'%(angle[0],angle[1])
+                    print '============================================\n\n'			
 
 		    print 'Begin to locate the signal and calculate Significance...'
 	     candidate, G_t,dump_flag  = Signal_finding(DM_axis,threshold,FFT2nd_data, pixel, DM_range, seq)
@@ -275,11 +284,6 @@ if __name__ == '__main__':
 		n_count = c_Candidates[3,:]
 
 		dm_bin	= DM_axis
-#		print snr_c.shape,':snr_c'
-#		print seq_c.shape,':seq_c'
-#		print dm_c.shape,"dm_c"
-#		print n_count.shape,'n_count'
-#		print c_Candidates.shape,'c_Candidates'
 		
 		snr_bin	= np.linspace(0,snr_c.max(),20)
 		Bins	= (snr_bin, dm_bin)

@@ -145,14 +145,14 @@ def Signal_finding(DM_axis,threshold,data,pixel,DM_range=[50,2000],seq=0,In_snr=
 				 dm =  DM_axis[lo_intersection[l]]
 				 points = n_count1[lo_intersection]
 				 significance= (DM_l.max() - data.mean())/sig/points[l]
-				 print "\n\n########################"
+				 print "-------------------------------"
 				 print "Found bright Transient!!"
-				 print "DM:",dm
-				 print "Significance",significance
+				 print "DM:%.2f"%dm
+				 print "Significance:%.2f"%significance
 				 print "Number of pixels:",points[l]
 				 print 'Seq of Total Chuncks:',seq
+				 print "-------------------------------"
 				 dump_flag = 1
-				 print "########################\n\n"
 				 Gtransient.extend([dm,seq,significance])
 #				 Gtransient.extend([dm,seq,alfa])
 	 file_seq = np.ones(len(lo_count[0]))*seq
