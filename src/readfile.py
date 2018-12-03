@@ -1,5 +1,6 @@
 import numpy as np
-from sigpyproc.Readers import FilReader
+#from sigpyproc.Readers import FilReader
+from Readers import FilReader
 from DM_calculate import angle_range
 from DM_calculate import time_delay
 from DM_calculate import length_calculate
