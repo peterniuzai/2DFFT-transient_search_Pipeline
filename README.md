@@ -42,7 +42,7 @@ Use
 	                        polar_sets_3D, polar_sets_2D, 2ndFFT_3D, 2ndFFT_2D}  
 	                        (This function Remain updates)  
  
-==Input file is required for filterbank file (*.fil) . SIGPYPROC is required at this stage==
+==Input file is required for filterbank file (*.fil) . From SIGPYPROC Readers.py is used as one of our dependent package ==
 
 ## 3. Result overview:
 If we use '-p' in parameter options, we will get a final plot like this:
