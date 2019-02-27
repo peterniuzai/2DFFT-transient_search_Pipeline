@@ -46,6 +46,6 @@ Use
 
 ## 3. Result overview:
 If we use '-p' in parameter options, we will get a final plot like this:
-![ ](https://raw.githubusercontent.com/peterniuzai/2DFFT-search/master/data/FRB090625.png  "FRB090625 with 2DFFT")
+![ ](https://github.com/peterniuzai/Work_memo/blob/master/FRB090625.png  "FRB090625 with 2DFFT")
 
 Plot for FRB090625 search result. Data has 4620288 time samples and 1024 frequency channels.  Top left give the candidate plot at 2nd 1DFFT map. Right top plot the candidates pixels number at each DM value and significance. Bottom plot is like traditional plot for DM and time, but time here are instead by time samples interval.
